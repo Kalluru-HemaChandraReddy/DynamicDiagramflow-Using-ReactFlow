@@ -58,7 +58,9 @@ Install:
 npm install
 ```
 Start dev server:
+```bash
 npm start
+```
 ```
 ```
 FOLDER STRUCTURE 
@@ -97,3 +99,4 @@ Keyboard delete: Select nodes/edges on the canvas (click them) and press Delete 
 
 Changes are saved automatically to localStorage.
 ```
+This is User's Giude
