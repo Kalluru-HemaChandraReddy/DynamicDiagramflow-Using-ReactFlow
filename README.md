@@ -61,8 +61,6 @@ Start dev server:
 ```bash
 npm start
 ```
-```
-```
 FOLDER STRUCTURE 
 ```
 dynamic-diagram-flow/
