@@ -1,38 +1,142 @@
-.App {
-  text-align: center;
+:root{
+  --bg1: linear-gradient(180deg, #f8fafc 0%, #eef2ff 50%, #e6f4ff 100%);
+  --panel: rgba(255,255,255,0.95);
+  --muted: #6b7280;
+  --primary: #2563eb;
+  --primary-2: #7c3aed;
+  --danger: #dc2626;
+  --card-shadow: 0 8px 30px rgba(13, 20, 40, 0.06);
+  --radius: 12px;
+  --gap: 12px;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html, body, #root { height: 100%; margin: 0; background: var(--bg1); }
+
+/* Container for canvas to show subtle gradient and card-like canvas */
+.canvas-wrap {
+  padding: 16px;
+  box-sizing: border-box;
+  min-height: 60vh;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* put a card behind the React Flow canvas */
+.canvas-wrap > div {
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,255,0.85));
+  border-radius: 14px;
+  padding: 8px;
+  height: calc(60vh - 16px);
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(14,30,76,0.04);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+/* Sidebar */
+.sidebar{
+  padding: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(250,250,255,0.96));
+  box-shadow: var(--card-shadow);
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  overflow: auto;
+  border-radius: 12px;
+  margin: 12px;
+}
+
+/* panel grouping */
+.panel { max-width: 380px; margin: 0 auto; }
+
+/* Header */
+.panel h3 { margin: 4px 0 10px 0; font-size: 1.25rem; color: #0f172a; }
+
+/* Controls and form */
+.control-block { margin-bottom: 16px; padding: 10px; border-radius: 10px; background: rgba(248,250,255,0.6); border: 1px solid rgba(14,30,76,0.03); }
+.control-block h4 { margin: 6px 0; font-size: 1rem; color: #111827; }
+label { display:block; font-size: 0.9rem; margin-bottom:6px; color:#0f172a; }
+input, select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e6eefc;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  background: white;
+}
+button {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(0,0,0,0.05);
+  cursor: pointer;
+}
+button.primary {
+  background: linear-gradient(90deg, var(--primary), var(--primary-2));
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(37,99,235,0.12);
+}
+button.danger {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+/* List */
+.list { list-style: none; padding: 0; margin: 8px 0 0 0; }
+.list-item{
+  display:flex; justify-content:space-between; align-items:center;
+  padding: 8px; border-radius: 8px; background: #fff; margin-bottom:8px;
+  border: 1px solid rgba(14,30,76,0.03);
+  box-shadow: 0 4px 12px rgba(2,6,23,0.03);
+}
+.list-item .muted { font-size: 0.78rem; color: var(--muted); }
+.actions { display:flex; gap:8px; align-items:center; }
+
+/* hint */
+.hint { font-size: 0.82rem; color: var(--muted); margin-top: 10px; }
+
+/* Desktop layout adjustments */
+@media(min-width:920px){
+  .sidebar{
+    width: 360px;
+    height: calc(100vh - 32px);
+    border-left: 0;
+    margin: 16px;
+    position: relative;
+  }
+  .canvas-wrap > div {
+    height: calc(100vh - 48px);
+  }
+
+  /* grid layout: canvas + sidebar */
+  div[style*="grid-template-columns"]{
+    display:grid !important;
+    grid-template-columns: 1fr 360px !important;
+    gap: 16px !important;
+    height: 100vh !important;
+    padding: 16px;
+    box-sizing: border-box;
+  }
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Mobile adjustments: stack vertically so canvas appears first */
+@media(max-width:919px){
+  div[style*="grid-template-columns"]{
+    display:block !important;
+    height: auto !important;
   }
-  to {
-    transform: rotate(360deg);
+  .canvas-wrap > div {
+    height: 60vh !important;
   }
+  .sidebar {
+    margin: 12px;
+  }
+}
+
+/* tiny responsive touches for very small screens */
+@media(max-width:420px){
+  .panel { padding: 6px; }
+  .control-block { padding: 8px; }
+  .canvas-wrap { padding: 8px; }
+  .canvas-wrap > div { padding: 6px; }
 }
