@@ -1,3 +1,4 @@
+HEAD
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -68,3 +69,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+=======
+# DynamicDiagramflow-Using-ReactFlow
+Created a Dynamic diagram flow using ReactFlow which helps users to add delete maintain edges and nodes dynamically
+>>>>>>> d2d1b3e459de6ebebbad88791d5e79503d9ed50d
