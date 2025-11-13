@@ -1,75 +1,117 @@
-HEAD
-# Getting Started with Create React App
+# Dynamic Diagram Flow (React + React Flow)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A beginner-friendly React application that builds dynamic interactive diagram flows from JSON metadata using React Flow.  
+Features include: add / edit / delete nodes and edges, drag connections on canvas, persistent state (localStorage), export/import JSON snapshots, keyboard shortcuts, and a polished responsive UI (mobile-first).
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Table of Contents
 
-### `npm start`
+- Features
+- Tech stack
+- Quick start (setup)
+- Folder structure
+- How to use (short tutorial)
+- Export / Import JSON
+- Keyboard shortcuts
+- Deployment
+- Troubleshooting
+- Next steps / optional improvements
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Features
 
-### `npm test`
+- Dynamic rendering of nodes & edges from `src/metadata.json` or localStorage.
+- Add nodes by label (random placement), drag and reposition nodes.
+- Connect nodes via canvas handles or via sidebar selects.
+- Edit node labels and delete nodes/edges (deleting a node removes connected edges).
+- Export current diagram to JSON file and import a JSON to load a diagram.
+- Keyboard shortcuts: `Delete` / `Backspace` to remove selected nodes/edges.
+- Mobile-first responsive layout with gradient background and card-like canvas.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Tech stack
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- React (Create React App)
+- React Flow (used for rendering and interacting with the diagram)
+- Plain CSS (mobile-first responsive styles)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+> No other libraries are used — matches assignment constraints.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## Quick start
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Requirements:
+- Node.js 16+ and npm
+- Code editor (VS Code recommended)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Steps:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. Clone or create the project (if you used the template already, skip cloning).
+2. Open a terminal in the project folder.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Install:
+```bash
+npm install
+```
+Start dev server:
+```bash
+npm start
+```
+FOLDER STRUCTURE 
+```
+dynamic-diagram-flow/
+├── node_modules/
+├── public/
+├── src/
+│   ├── components/
+│   │   ├── Diagram.js
+│   │   └── Sidebar.js
+│   ├── App.js
+│   ├── App.css
+│   ├── index.js
+│   └── metadata.json
+├── package.json
+└── README.md
+```
+How to use
 
-## Learn More
+Add node: Enter a label in the sidebar and click Add Node.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Move node: Drag a node on the canvas to change position.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Connect nodes:
 
-### Code Splitting
+Using mouse: drag from the round handle on a node to another node.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Using sidebar: choose source and target and click Add Edge.
 
-### Analyzing the Bundle Size
+Edit node: Click Edit for a node in the sidebar, change label, click Save.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Delete: Click Delete next to a node or edge in the sidebar.
 
-### Making a Progressive Web App
+Keyboard delete: Select nodes/edges on the canvas (click them) and press Delete or Backspace.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Changes are saved automatically to localStorage.
+```
+This is User's Giude
+```
+Export / Import JSON
 
-### Advanced Configuration
+Export: Click Export JSON in the sidebar — downloads a .json snapshot of the current nodes & edges. This is handy to share with recruiters or to keep a backup.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Import: Click Import JSON and choose a previously exported JSON (or any JSON with nodes and edges arrays). The app will load the diagram.
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-=======
-# DynamicDiagramflow-Using-ReactFlow
-Created a Dynamic diagram flow using ReactFlow which helps users to add delete maintain edges and nodes dynamically
->>>>>>> d2d1b3e459de6ebebbad88791d5e79503d9ed50d
+JSON structure:
+```
+{
+  "nodes": [ /* array of node objects */ ],
+  "edges": [ /* array of edge objects */ ]
+}
+```
+Keyboard shortcuts
+```
+Delete or Backspace: Delete selected nodes and edges.
