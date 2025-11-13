@@ -1,3 +1,4 @@
+// src/components/Diagram.js
 import React from "react";
 import {
   ReactFlow,
@@ -21,11 +22,16 @@ export default function Diagram({
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes || []);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges || []);
 
-  // Sync parent -> local
+  /**
+   * Keep local state in sync with parent-provided initialNodes/initialEdges.
+   * We include setNodes/setEdges in deps (they are stable from hook),
+   * and initialNodes/initialEdges so effect runs when parent updates them.
+   */
   React.useEffect(() => {
     if (!initialNodes) return;
     setNodes((curr) => {
-      const same = curr.length === initialNodes.length &&
+      const same =
+        curr.length === initialNodes.length &&
         curr.every((n, i) => n.id === initialNodes[i].id);
       return same ? curr : initialNodes;
     });
@@ -34,29 +40,43 @@ export default function Diagram({
   React.useEffect(() => {
     if (!initialEdges) return;
     setEdges((curr) => {
-      const same = curr.length === initialEdges.length &&
+      const same =
+        curr.length === initialEdges.length &&
         curr.every((e, i) => e.id === initialEdges[i].id);
       return same ? curr : initialEdges;
     });
   }, [initialEdges, setEdges]);
 
-  // Emit local -> parent
-  React.useEffect(() => onNodesChangeExternal && onNodesChangeExternal(nodes), [nodes]);
-  React.useEffect(() => onEdgesChangeExternal && onEdgesChangeExternal(edges), [edges]);
+  // Emit local -> parent when local nodes/edges change
+  React.useEffect(() => {
+    if (typeof onNodesChangeExternal === "function") {
+      onNodesChangeExternal(nodes);
+    }
+  }, [nodes, onNodesChangeExternal]);
 
+  React.useEffect(() => {
+    if (typeof onEdgesChangeExternal === "function") {
+      onEdgesChangeExternal(edges);
+    }
+  }, [edges, onEdgesChangeExternal]);
+
+  // Called when a connection is made via drag handles
   const onConnect = React.useCallback(
     (connection) => {
       const newEdges = addEdge(connection, edges);
       setEdges(newEdges);
-      if (onConnectExternal) onConnectExternal(connection);
+      if (typeof onConnectExternal === "function") onConnectExternal(connection);
     },
     [edges, setEdges, onConnectExternal]
   );
 
+  // Selection change handler (selected nodes/edges)
   const onSelectionChange = React.useCallback(
     (selection) => {
-      // selection is an object: { nodes: [...], edges: [...] } (React Flow)
-      if (onSelectionChangeExternal) onSelectionChangeExternal(selection);
+      // selection is an object { nodes: [...], edges: [...] }
+      if (typeof onSelectionChangeExternal === "function") {
+        onSelectionChangeExternal(selection);
+      }
     },
     [onSelectionChangeExternal]
   );

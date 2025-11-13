@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useCallback } from "react";
+// src/App.js
+import React, { useEffect, useState } from "react";
 import Diagram from "./components/Diagram";
 import Sidebar from "./components/Sidebar";
 import metadata from "./metadata.json";
@@ -23,69 +24,78 @@ function persistState(nodes, edges) {
   }
 }
 
-function App() {
+export default function App() {
   const persisted = readPersisted();
   const [nodes, setNodes] = useState(persisted?.nodes || metadata.nodes || []);
   const [edges, setEdges] = useState(persisted?.edges || metadata.edges || []);
   const [selection, setSelection] = useState({ nodes: [], edges: [] });
 
+  // persist on change
   useEffect(() => {
     persistState(nodes, edges);
   }, [nodes, edges]);
 
-  // Diagram -> App sync handlers
-  const handleNodesChangeExternal = (newNodes) => setNodes(newNodes);
-  const handleEdgesChangeExternal = (newEdges) => setEdges(newEdges);
+  // Stable handlers: useCallback not required in this file for correctness,
+  // but we ensure stability by not recreating functions unnecessarily.
+  // (We define them with React.useCallback below-like pattern using refs here is fine,
+  // but keeping straightforward definitions and wrapping where needed.)
+  const handleNodesChangeExternal = React.useCallback((newNodes) => {
+    setNodes(newNodes);
+  }, []);
 
-  // selection from diagram
-  const handleSelectionChange = (sel) => {
-    // sel is { nodes: [...], edges: [...] }
+  const handleEdgesChangeExternal = React.useCallback((newEdges) => {
+    setEdges(newEdges);
+  }, []);
+
+  const handleSelectionChange = React.useCallback((sel) => {
     setSelection({
-      nodes: (sel?.nodes || []).map(n => n.id || n),
-      edges: (sel?.edges || []).map(e => e.id || e)
+      nodes: (sel?.nodes || []).map((n) => (n?.id ? n.id : n)),
+      edges: (sel?.edges || []).map((e) => (e?.id ? e.id : e))
     });
-  };
+  }, []);
 
-  // Add node (used by sidebar)
-  const addNode = (label = "New Node") => {
+  // Add node
+  const addNode = React.useCallback((label = "New Node") => {
     const id = Date.now().toString();
     const newNode = {
       id,
       type: "default",
-      position: { x: 50 + Math.floor(Math.random() * 200), y: 50 + Math.floor(Math.random() * 200) },
+      position: {
+        x: 50 + Math.floor(Math.random() * 200),
+        y: 50 + Math.floor(Math.random() * 200)
+      },
       data: { label }
     };
     setNodes((prev) => [...prev, newNode]);
-  };
+  }, []);
 
-  // Delete node and any connected edges
-  const deleteNode = (nodeId) => {
-    setNodes((prev) => prev.filter(n => n.id !== nodeId));
-    setEdges((prev) => prev.filter(e => e.source !== nodeId && e.target !== nodeId));
-    // clear selection if it was selected
-    setSelection((s) => ({ ...s, nodes: s.nodes.filter(id => id !== nodeId) }));
-  };
+  // Delete node + connected edges
+  const deleteNode = React.useCallback((nodeId) => {
+    setNodes((prev) => prev.filter((n) => n.id !== nodeId));
+    setEdges((prev) => prev.filter((e) => e.source !== nodeId && e.target !== nodeId));
+    setSelection((s) => ({ ...s, nodes: s.nodes.filter((id) => id !== nodeId) }));
+  }, []);
 
   // Edit node label
-  const editNodeLabel = (nodeId, newLabel) => {
-    setNodes((prev) => prev.map(n => n.id === nodeId ? { ...n, data: { ...n.data, label: newLabel } } : n));
-  };
+  const editNodeLabel = React.useCallback((nodeId, newLabel) => {
+    setNodes((prev) => prev.map((n) => (n.id === nodeId ? { ...n, data: { ...n.data, label: newLabel } } : n)));
+  }, []);
 
   // Add edge
-  const addEdge = (source, target) => {
+  const addEdge = React.useCallback((source, target) => {
     if (source === target) return alert("Source and target cannot be the same");
     const id = `e${Date.now()}`;
     setEdges((prev) => [...prev, { id, source, target, type: "smoothstep" }]);
-  };
+  }, []);
 
   // Delete edge
-  const deleteEdge = (edgeId) => {
-    setEdges((prev) => prev.filter(e => e.id !== edgeId));
-    setSelection((s) => ({ ...s, edges: s.edges.filter(id => id !== edgeId) }));
-  };
+  const deleteEdge = React.useCallback((edgeId) => {
+    setEdges((prev) => prev.filter((e) => e.id !== edgeId));
+    setSelection((s) => ({ ...s, edges: s.edges.filter((id) => id !== edgeId) }));
+  }, []);
 
-  // Export JSON
-  const exportJSON = useCallback(() => {
+  // Export JSON snapshot
+  const exportJSON = React.useCallback(() => {
     const payload = { nodes, edges };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -96,32 +106,31 @@ function App() {
     URL.revokeObjectURL(url);
   }, [nodes, edges]);
 
-  // Import JSON (payload should be { nodes: [], edges: [] })
-  const importJSON = (payload) => {
+  // Import JSON payload { nodes: [], edges: [] }
+  const importJSON = React.useCallback((payload) => {
     if (!payload || !Array.isArray(payload.nodes) || !Array.isArray(payload.edges)) {
       return alert("Imported JSON must have `nodes` and `edges` arrays.");
     }
     setNodes(payload.nodes);
     setEdges(payload.edges);
     alert("Imported JSON loaded.");
-  };
+  }, []);
 
-  // Keyboard shortcuts: Delete key removes selected nodes AND selected edges
+  // Keyboard delete/backspace -> delete selected nodes & edges
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Delete" || e.key === "Backspace") {
-        // delete selected nodes first
         if (selection.nodes && selection.nodes.length) {
-          selection.nodes.forEach(id => deleteNode(id));
+          selection.nodes.forEach((id) => deleteNode(id));
         }
         if (selection.edges && selection.edges.length) {
-          selection.edges.forEach(id => deleteEdge(id));
+          selection.edges.forEach((id) => deleteEdge(id));
         }
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selection, nodes, edges]);
+  }, [selection, deleteNode, deleteEdge]);
 
   const layout = {
     display: "grid",
@@ -130,7 +139,6 @@ function App() {
     gap: 0
   };
 
-  // Pass down handlers
   return (
     <div style={layout}>
       <div style={{ width: "100%", height: "100%" }} className="canvas-wrap">
@@ -140,6 +148,7 @@ function App() {
           onNodesChangeExternal={handleNodesChangeExternal}
           onEdgesChangeExternal={handleEdgesChangeExternal}
           onSelectionChangeExternal={handleSelectionChange}
+          onConnectExternal={() => {}}
           fitView={true}
         />
       </div>
@@ -158,5 +167,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
