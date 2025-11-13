@@ -98,3 +98,20 @@ Keyboard delete: Select nodes/edges on the canvas (click them) and press Delete 
 Changes are saved automatically to localStorage.
 ```
 This is User's Giude
+```
+Export / Import JSON
+
+Export: Click Export JSON in the sidebar — downloads a .json snapshot of the current nodes & edges. This is handy to share with recruiters or to keep a backup.
+
+Import: Click Import JSON and choose a previously exported JSON (or any JSON with nodes and edges arrays). The app will load the diagram.
+
+JSON structure:
+```
+{
+  "nodes": [ /* array of node objects */ ],
+  "edges": [ /* array of edge objects */ ]
+}
+```
+Keyboard shortcuts
+```
+Delete or Backspace: Delete selected nodes and edges.
